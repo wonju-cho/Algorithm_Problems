@@ -49,3 +49,63 @@ int main()
 	}
 
 }
+
+//BFS
+#include<iostream>
+#include<vector>
+#include<queue>
+
+using namespace std;
+
+void BFS(vector<vector<int>>& g, int r, vector<bool>& v, vector<int>& res)
+{
+	queue<int> q;
+	q.push(r);
+	v[r] = true;
+
+	while(!q.empty())
+	{
+		auto id = q.front();
+		q.pop();
+
+		for(int i = 0; i < g[id].size(); i++)
+		{
+			if(!v[g[id][i]])
+			{
+				q.push(g[id][i]);
+				v[g[id][i]] = true;
+				res[g[id][i]] = id;
+			}
+		}
+	}
+}
+
+int main()
+{
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cout.tie(NULL);
+
+	int N = 0;
+	cin >> N;
+
+	vector<vector<int>> g(N + 1);
+	vector<int> res(N + 1);
+	vector<bool> v(N + 1);
+
+	for(int i = 1; i < N; i++)
+	{
+		int s = 0;
+		int e = 0;
+		cin >> s;
+		cin >> e;
+
+		g[s].push_back(e);
+		g[e].push_back(s);
+	}
+
+	BFS(g, 1, v, res);
+
+	for (int i = 2; i <= N; i++)
+		cout << res[i]<<"\n";
+}
