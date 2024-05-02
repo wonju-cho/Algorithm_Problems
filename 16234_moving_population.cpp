@@ -1,124 +1,104 @@
-#include<iostream>
-#include<queue>
-#include<set>
+#include <iostream>
+#include <vector>
+#include <queue>
 
 using namespace std;
+int b[50][50];
+bool v[50][50];
+int N = 0; int L = 0; int R = 0;
+pair<int, int> movement[4] = {{1,0}, {-1,0}, {0,-1}, {0,1}};
 
-pair<int, int> movement[4] = { {1,0}, {-1,0}, {0,1}, {0,-1} };
-
-int board[52][52];
-bool visited[52][52];
-int N;
-int L;
-int R;
-bool flag = false;
-
-bool DiffCheck(pair<int,int> c1, pair<int,int> c2)
-{
-	if (abs(board[c1.first][c1.second] - board[c2.first][c2.second]) >= L &&
-		abs(board[c1.first][c1.second] - board[c2.first][c2.second]) <= R)
-		return true;
-
-	return false;
-}
-
-void BFS(pair<int,int> start)
+void BFS(pair<int, int> s)
 {
 	queue<pair<int, int>> q;
-	q.push(start);
-	visited[start.first][start.second] = true;
-	set<pair<int, int>> sUnity;
+	q.push(s);
+	v[s.first][s.second] = true;
+	vector<pair<int, int>> vec;
+	vec.push_back(s);
+	int total = b[s.first][s.second];
 
-	while (!q.empty())
+	while(!q.empty())
 	{
-		auto point = q.front();
+		auto curr = q.front();
 		q.pop();
 
-		for (int i = 0; i < 4; i++)
+		for (int m = 0; m < 4; m++)
 		{
-			int dy = point.first + movement[i].first;
-			int dx = point.second + movement[i].second;
+			int dy = curr.first + movement[m].first;
+			int dx = curr.second + movement[m].second;
 
-			if (dy >= N || dy < 0 || dx >= N || dx < 0) continue;
+			if (dy < 0 || dy >= N || dx < 0 || dx >= N) continue;
 
-			if (visited[dy][dx])
-				continue;
+			if (v[dy][dx]) continue;
 
-			if(DiffCheck(point, {dy,dx}))
+			if (abs(b[curr.first][curr.second] - b[dy][dx]) >= L && abs(b[curr.first][curr.second] - b[dy][dx]) <= R)
 			{
 				q.push({ dy,dx });
-				sUnity.insert({ point.first, point.second });
-				sUnity.insert({ dy, dx });
-				visited[dy][dx] = true;
+				v[dy][dx] = true;
+				vec.push_back({ dy,dx });
+				total += b[dy][dx];
 			}
 		}
 	}
 
-	if(!sUnity.empty())
+	int average = total / vec.size();
+	for(auto ve:vec)
 	{
-		flag = true;
-		int sum = 0;
-		for (auto s : sUnity)
-		{
-			sum += board[s.first][s.second];
-		}
-
-		int population = sum / sUnity.size();
-		for (auto s : sUnity)
-		{
-			board[s.first][s.second] = population;
-		}
+		b[ve.first][ve.second] = average;
 	}
 }
 
-int main()
-{
+int main(){
 	ios_base::sync_with_stdio(false);
 	cin.tie(NULL);
 	cout.tie(NULL);
 
-	cin >> N;
-	cin >> L;
-	cin >> R;
+	 cin >> N >> L >> R;
 
-	for (int y = 0; y < N; y++)
+	for(int y = 0; y < N; y++)
 	{
 		for(int x = 0; x < N; x++)
 		{
-			int temp = 0;
-			cin >> temp;
-			board[y][x] = temp;
+			cin >> b[y][x];
 		}
 	}
 
+	bool flag = true;
 	int res = 0;
-
-	while(true)
+	while(flag)
 	{
 		flag = false;
-
 		for (int y = 0; y < N; y++)
 		{
 			for (int x = 0; x < N; x++)
 			{
-				if(!visited[y][x])
+				for(int m = 0; m < 4; m++)
 				{
-					BFS({ y, x });
+					int dy = y + movement[m].first;
+					int dx = x + movement[m].second;
+
+					if (dy < 0 || dy >= N || dx < 0 || dx >= N) continue;
+
+					if (v[dy][dx]) continue;
+
+					if (abs(b[y][x] - b[dy][dx]) >= L && abs(b[y][x] - b[dy][dx]) <= R)
+					{
+						BFS({ dy,dx });
+						flag = true;
+					}
 				}
 			}
 		}
 
-		if (!flag) break;
+		if (flag) res++;
 
 		for (int y = 0; y < N; y++)
 		{
 			for (int x = 0; x < N; x++)
 			{
-				visited[y][x] = false;
+				v[y][x] = false;
 			}
 		}
-
-		res++;
 	}
 
 	cout << res;
