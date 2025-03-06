@@ -19,20 +19,16 @@ int main() {
 
     long checkFromLeader = 0; long checkFromMember = 0;
     cin>>checkFromLeader>>checkFromMember;
-    for(int i = 0; i < n; i++)
-    {
-        customers[i] = max(0L, customers[i] - checkFromLeader);
-    }
-
     long res = 0;
     for(int i = 0; i < n; i++)
     {
+        customers[i] = max(0L, customers[i] - checkFromLeader);
         long memberCnt = customers[i] / checkFromMember;
         if(customers[i] % checkFromMember > 0)
             ++memberCnt;
         res += memberCnt + 1;
     }
-
+    
     cout<<res;
     return 0;
 }
