@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <algorithm>
 using namespace std;
 
 int main() {
@@ -20,7 +21,7 @@ int main() {
     cin>>checkFromLeader>>checkFromMember;
     for(int i = 0; i < n; i++)
     {
-        customers[i] -= checkFromLeader;
+        customers[i] = max(0, customers[i] - checkFromLeader);
     }
 
     int res = 0;
